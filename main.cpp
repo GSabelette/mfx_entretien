@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Point.h"
-#include "Mesh.h"
+#include "Triangle.h"
 #include "Vector3.h"
 #include "Triplet.h"
 
@@ -20,12 +20,13 @@ struct Buffer {
 };
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Buffer<T> b) {
-    std::cout << "Buffer [";
+    os << "Buffer [";
     T* iterPtr = NULL;
     for (iterPtr = (T*)b.data; iterPtr < (b.data + b.length*b.byteStride); iterPtr++) {
-        std::cout << *iterPtr << ", ";
+        os << *iterPtr << ", ";
     }
-    std::cout << "]";
+    os << "]";
+    return os;
 }   
 
 
@@ -54,17 +55,15 @@ int main(int argc, char* argv[]) {
         std::cout << "Point récupéré : " << *p << "\n";
     }
     
-    std::vector<Mesh> meshes;
+    std::vector<Triangle> triangles;
 
-    std::cout << "Amount of triplets : " << bufferTriplets.size() << "\n";
-
-    for (int i = 0; i < bufferTriplets.size(); i++) {
-        meshes.emplace_back(Mesh(bufferPoints[bufferTriplets[i]->a], bufferPoints[bufferTriplets[i]->b], bufferPoints[bufferTriplets[i]->c]));
+    for (auto& triplet : bufferTriplets) {
+        triangles.emplace_back(Triangle(bufferPoints[triplet->a], bufferPoints[triplet->b], bufferPoints[triplet->c]));
     }
 
-    for (auto& mesh : meshes) {
-        for (auto& point : mesh.points) {
-            point->addMesh(&mesh);
+    for (auto& triangle : triangles) {
+        for (auto& point : triangle.points) {
+            point->addTriangle(&triangle);
         }
     }
 

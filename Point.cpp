@@ -1,15 +1,15 @@
 #include "Point.h"
-#include "Mesh.h"
+#include "Triangle.h"
 #include "Vector3.h"
 
-void Point::addMesh(Mesh* mesh) {
-    meshes.push_back(mesh);
+void Point::addTriangle(Triangle* triangle) {
+    triangles.push_back(triangle);
 }
 
 Vector3 Point::getNormal() {
     Vector3 normalVector;
-    for (auto mesh : meshes) {
-        normalVector += mesh->getNormalVector();
+    for (auto& triangle : triangles) {
+        normalVector += triangle->getNormalVector();
     }
     return normalVector;
 }
