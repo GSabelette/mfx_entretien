@@ -4,29 +4,29 @@
 #include "Vector3.h"
 #include "Triplet.h"
 
+template <typename T>
 struct Buffer {
     void* data;
     int byteStride;
     int length;
 
-    template<typename T> void iterateBuffer(std::vector<T*>* vector) {
+    void iterateBuffer(std::vector<T*>* vector) {
         T* iterPtr = NULL;
         for (iterPtr = (T*)data; iterPtr < (data + length*byteStride); iterPtr++) {
             std::cout << "Pushed back : " << iterPtr << "\n";
             vector->push_back(iterPtr);
         }
     }
-
-    template<typename T> void print() {
-        std::cout << "Buffer [";
-        T* iterPtr = NULL;
-        for (iterPtr = (T*)data; iterPtr < (data + length*byteStride); iterPtr++) {
-            std::cout << *iterPtr << ", ";
-        }
-        std::cout << "]\n";
-    }   
 };
-
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Buffer<T> b) {
+    std::cout << "Buffer [";
+    T* iterPtr = NULL;
+    for (iterPtr = (T*)b.data; iterPtr < (b.data + b.length*b.byteStride); iterPtr++) {
+        std::cout << *iterPtr << ", ";
+    }
+    std::cout << "]";
+}   
 
 
 int main(int argc, char* argv[]) {
@@ -40,14 +40,14 @@ int main(int argc, char* argv[]) {
     triplets.push_back(Triplet{0, 1, 2});
     triplets.push_back(Triplet{0, 2, 3});
 
-    Buffer P {&points[0], sizeof(Point), points.size()};
-    Buffer T {&triplets[0], sizeof(Triplet), triplets.size()};
+    Buffer<Point> P {&points[0], sizeof(Point), points.size()};
+    Buffer<Triplet> T {&triplets[0], sizeof(Triplet), triplets.size()};
 
     std::vector<Point*> bufferPoints;
     std::vector<Triplet*> bufferTriplets;
 
-    P.iterateBuffer<Point>(&bufferPoints);
-    T.iterateBuffer<Triplet>(&bufferTriplets);
+    P.iterateBuffer(&bufferPoints);
+    T.iterateBuffer(&bufferTriplets);
 
     for (auto& p : bufferPoints) {
         std::cout << "Adresse point récupéré : " << &p << " ";
@@ -74,9 +74,9 @@ int main(int argc, char* argv[]) {
         normalVectors.push_back(point->getNormal());
     }
 
-    Buffer N {&normalVectors[0], sizeof(Vector3), normalVectors.size()};
+    Buffer<Vector3> N {&normalVectors[0], sizeof(Vector3), normalVectors.size()};
 
-    N.print<Vector3>();
+    std::cout << N << "\n";
 
     std::cout << "Finished.\n";
 }
